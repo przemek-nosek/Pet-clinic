@@ -13,4 +13,8 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     Optional<Owner> findById(Long id);
 
     boolean existsByPhoneNumber(String phoneNumber);
+
+//    @Query("delete from Owner o where ")
+//    void delete(Long id);
+
 }

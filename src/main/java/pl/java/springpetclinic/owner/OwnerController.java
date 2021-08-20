@@ -42,11 +42,22 @@ public class OwnerController {
 
         owner.setFirstName(ownerDetails.getFirstName());
         owner.setLastName(ownerDetails.getLastName());
-        owner.setPhoneNumber(ownerDetails.getPhoneNumber());
+
+        if (!owner.getPhoneNumber().equals(ownerDetails.getPhoneNumber())) {
+            owner.setPhoneNumber(ownerDetails.getPhoneNumber());
+        }
+        owner.removePets();
         owner.setPets(ownerDetails.getPets());
 
         ownerService.save(owner);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Owner> deleteOwner(@PathVariable("id") Long id) {
+        Owner owner = ownerService.deleteOwnerById(id);
+
+        return new ResponseEntity<>(owner, HttpStatus.OK);
     }
 }

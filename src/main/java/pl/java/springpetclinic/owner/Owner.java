@@ -6,7 +6,9 @@ import lombok.Setter;
 import pl.java.springpetclinic.pet.Pet;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,9 +28,16 @@ public class Owner {
 
     @Size(min = 2, max = 45)
     private String lastName;
+
+    @Column(unique = true, nullable = false)
+    @NotNull
     private String phoneNumber; // TO VALIDATE
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     @NotEmpty(message = "Owner should have at least 1 pet.")
     private Set<Pet> pets = new HashSet<>();
@@ -48,5 +57,9 @@ public class Owner {
     public Pet removePet(Pet pet) {
         this.pets.remove(pet);
         return pet;
+    }
+
+    public void removePets() {
+        this.pets.clear();
     }
 }

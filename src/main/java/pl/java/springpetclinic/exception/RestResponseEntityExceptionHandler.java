@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +49,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         ResponseEntity<ErrorMessage> errorMessage = getErrorMessageResponseEntity(status, ex.getMessage(), Collections.emptyList());
 
         return new ResponseEntity<>(errorMessage, status);
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<ErrorMessage> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex, WebRequest request) {
+        return getErrorMessageResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage(), Collections.emptyList());
     }
 
     private ResponseEntity<ErrorMessage> getErrorMessageResponseEntity(HttpStatus httpStatus, String message, List<String> errors) {
