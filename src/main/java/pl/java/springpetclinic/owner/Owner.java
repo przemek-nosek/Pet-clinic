@@ -6,7 +6,6 @@ import lombok.Setter;
 import pl.java.springpetclinic.pet.Pet;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -49,14 +48,12 @@ public class Owner {
         this.pets = pets;
     }
 
-    public Pet addPet(Pet pet) {
+    public void addPet(Pet pet) {
         this.pets.add(pet);
-        return pet;
     }
 
-    public Pet removePet(Pet pet) {
+    public void removePet(Pet pet) {
         this.pets.remove(pet);
-        return pet;
     }
 
     public void removePets() {

@@ -20,13 +20,18 @@ import java.util.List;
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({OwnerNotFoundException.class})
+    @ExceptionHandler({OwnerNotFoundException.class, PetNotFoundException.class})
     public <T extends RuntimeException> ResponseEntity<ErrorMessage> handleNotFoundException(T ex, WebRequest request) {
         return getErrorMessageResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage(), Collections.emptyList());
     }
 
     @ExceptionHandler({PhoneNumberAlreadyExistsException.class})
     public ResponseEntity<ErrorMessage> handlePhoneNumberAlreadyExistsException(PhoneNumberAlreadyExistsException ex, WebRequest request) {
+        return getErrorMessageResponseEntity(HttpStatus.CONFLICT, ex.getMessage(), Collections.emptyList());
+    }
+
+    @ExceptionHandler({PetBelongsToSomeoneElseException.class})
+    public ResponseEntity<ErrorMessage> handlePetBelongsToSomeoneElseException(PetBelongsToSomeoneElseException ex, WebRequest request) {
         return getErrorMessageResponseEntity(HttpStatus.CONFLICT, ex.getMessage(), Collections.emptyList());
     }
 

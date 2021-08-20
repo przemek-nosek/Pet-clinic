@@ -23,4 +23,5 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     @Query("update Owner o set o.phoneNumber=:phoneNumber where o.id=:id")
     @Modifying
     void updatePhoneNumber(Long id, String phoneNumber);
+
 }

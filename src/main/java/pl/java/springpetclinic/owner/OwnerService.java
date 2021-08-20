@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.java.springpetclinic.dto.OwnerFirstAndLastNameOnly;
-import pl.java.springpetclinic.exception.OwnerNotFoundException;
-import pl.java.springpetclinic.exception.PhoneNumberAlreadyExistsException;
-import pl.java.springpetclinic.exception.PhoneNumberIllegalFormatException;
+import pl.java.springpetclinic.exception.*;
+import pl.java.springpetclinic.pet.Pet;
+import pl.java.springpetclinic.pet.PetRepository;
 
 import java.util.List;
 
@@ -15,6 +15,7 @@ import java.util.List;
 public class OwnerService {
 
     private final OwnerRepository ownerRepository;
+    private final PetRepository petRepository;
 
     public List<Owner> findAllOwners() {
         return ownerRepository.findAll();
@@ -80,5 +81,26 @@ public class OwnerService {
         if (!ownerRepository.existsById(id)) {
             throw new OwnerNotFoundException(String.format("Owner with given id: %d not found", id));
         }
+    }
+
+    public Owner addPetToOwner(Long id, Pet pet) {
+        Owner foundOwner = findOwnerById(id);
+        foundOwner.addPet(pet);
+
+        return ownerRepository.save(foundOwner);
+    }
+
+    public Owner removePetFromOwner(Long id, Long petId) {
+        Pet pet = petRepository.findById(petId).orElseThrow(() -> new PetNotFoundException(String.format("Pet with given id: %d not found", petId)));
+
+        Owner foundOwner = findOwnerById(id);
+
+        if (!foundOwner.getPets().contains(pet)) {
+            throw new PetBelongsToSomeoneElseException("Pet belongs to someone else");
+        }
+
+        foundOwner.removePet(pet);
+
+        return ownerRepository.save(foundOwner);
     }
 }

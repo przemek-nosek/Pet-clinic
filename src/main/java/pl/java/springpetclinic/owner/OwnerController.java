@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.java.springpetclinic.dto.OwnerFirstAndLastNameOnly;
+import pl.java.springpetclinic.pet.Pet;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -55,6 +56,20 @@ public class OwnerController {
         ownerService.save(owner);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/pets/add")
+    public ResponseEntity<Owner> addPetToOwner(@PathVariable("id") Long id, @Valid @RequestBody Pet pet) {
+        Owner owner = ownerService.addPetToOwner(id, pet);
+
+        return new ResponseEntity<>(owner, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/pets/{petId}")
+    public ResponseEntity<Owner> removePetFromOwner(@PathVariable("id") Long id, @PathVariable Long petId) {
+        Owner owner = ownerService.removePetFromOwner(id, petId);
+
+        return new ResponseEntity<>(owner, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
