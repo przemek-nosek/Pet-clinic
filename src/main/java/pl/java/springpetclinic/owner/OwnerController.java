@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.java.springpetclinic.dto.OwnerDto;
 import pl.java.springpetclinic.dto.OwnerFirstAndLastNameOnly;
+import pl.java.springpetclinic.mapper.OwnerMapper;
 import pl.java.springpetclinic.pet.Pet;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,10 +21,15 @@ public class OwnerController {
     private final OwnerService ownerService;
 
     @GetMapping
-    public ResponseEntity<List<Owner>> findAllOwners() {
+    public ResponseEntity<List<OwnerDto>> findAllOwners() {
         List<Owner> owners = ownerService.findAllOwners();
+        List<OwnerDto> ownerDtos = new ArrayList<>();
+        for (Owner owner : owners) {
+            OwnerDto ownerDto = OwnerMapper.INSTANCE.ownerToOwnerDto(owner);
+            ownerDtos.add(ownerDto);
+        }
 
-        return new ResponseEntity<>(owners, HttpStatus.OK);
+        return new ResponseEntity<>(ownerDtos, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
