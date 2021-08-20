@@ -12,6 +12,7 @@ import pl.java.springpetclinic.pet.Pet;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/owners")
@@ -21,13 +22,30 @@ public class OwnerController {
     private final OwnerService ownerService;
 
     @GetMapping
-    public ResponseEntity<List<OwnerDto>> findAllOwners() {
+    public ResponseEntity<List<OwnerDto>> findAllOwners(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "lastName") String sortBy) {
+
+        List<Owner> allOwners = ownerService.findAllOwners(page, size, sortBy);
+
+        List<OwnerDto> ownerDtos = allOwners.stream()
+                .map(OwnerMapper.INSTANCE::ownerToOwnerDto)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(ownerDtos, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/all")
+    public ResponseEntity<List<OwnerDto>> findAllOwnersAll() {
         List<Owner> owners = ownerService.findAllOwners();
-        List<OwnerDto> ownerDtos = new ArrayList<>();
-        for (Owner owner : owners) {
-            OwnerDto ownerDto = OwnerMapper.INSTANCE.ownerToOwnerDto(owner);
-            ownerDtos.add(ownerDto);
-        }
+
+        List<OwnerDto> ownerDtos =
+                owners.stream()
+                        .map(OwnerMapper.INSTANCE::ownerToOwnerDto)
+                        .collect(Collectors.toList());
+
 
         return new ResponseEntity<>(ownerDtos, HttpStatus.OK);
     }

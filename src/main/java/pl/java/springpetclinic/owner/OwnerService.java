@@ -1,6 +1,10 @@
 package pl.java.springpetclinic.owner;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.java.springpetclinic.dto.OwnerFirstAndLastNameOnly;
@@ -32,7 +36,7 @@ public class OwnerService {
         isPhoneValid(phoneNumber);
 
         if (existsByPhoneNumber(phoneNumber)) {
-            throw new PhoneNumberAlreadyExistsException(String.format("Phone number: %s already exists",phoneNumber));
+            throw new PhoneNumberAlreadyExistsException(String.format("Phone number: %s already exists", phoneNumber));
         }
 
         return ownerRepository.save(owner);
@@ -75,7 +79,7 @@ public class OwnerService {
         isPhoneValid(phoneNumber);
 
         ownerRepository.updatePhoneNumber(id, phoneNumber);
-     }
+    }
 
     private void ownerExists(Long id) {
         if (!ownerRepository.existsById(id)) {
@@ -102,5 +106,13 @@ public class OwnerService {
         foundOwner.removePet(pet);
 
         return ownerRepository.save(foundOwner);
+    }
+
+    public List<Owner> findAllOwners(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+
+        Page<Owner> pagedResult = ownerRepository.findAll(pageable);
+
+        return pagedResult.getContent();
     }
 }

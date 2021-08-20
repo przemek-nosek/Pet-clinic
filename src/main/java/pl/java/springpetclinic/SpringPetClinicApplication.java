@@ -10,6 +10,7 @@ import pl.java.springpetclinic.pet.Pet;
 
 import java.util.Random;
 import java.util.Set;
+// TODO: write tests, add pagination, add loggers, enable 2nd level cache
 
 @SpringBootApplication
 @AllArgsConstructor
