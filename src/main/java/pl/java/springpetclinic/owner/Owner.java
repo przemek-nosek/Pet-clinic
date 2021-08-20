@@ -31,7 +31,7 @@ public class Owner {
 
     @Column(unique = true, nullable = false)
     @NotNull
-    private String phoneNumber; // TO VALIDATE
+    private String phoneNumber;
 
     @OneToMany(
             fetch = FetchType.LAZY,

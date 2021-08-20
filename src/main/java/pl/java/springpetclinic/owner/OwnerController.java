@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.java.springpetclinic.dto.OwnerFirstAndLastNameOnly;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -43,15 +44,31 @@ public class OwnerController {
         owner.setFirstName(ownerDetails.getFirstName());
         owner.setLastName(ownerDetails.getLastName());
 
-        if (!owner.getPhoneNumber().equals(ownerDetails.getPhoneNumber())) {
-            owner.setPhoneNumber(ownerDetails.getPhoneNumber());
+        String phoneNumber = ownerDetails.getPhoneNumber();
+        if (!owner.getPhoneNumber().equals(phoneNumber) && PhoneNumberValidator.validatePhoneNumber(phoneNumber)) {
+            owner.setPhoneNumber(phoneNumber);
         }
+
         owner.removePets();
         owner.setPets(ownerDetails.getPets());
 
         ownerService.save(owner);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> FirstAndLastNameOwnerUpdate(@PathVariable("id") Long id, @RequestBody OwnerFirstAndLastNameOnly toUpdate) {
+        ownerService.updateFirstnameAndLastname(id, toUpdate);
+
+        return ResponseEntity.ok("First name and last name updated.");
+    }
+
+    @PatchMapping("/{id}/{phoneNumber}")
+    public ResponseEntity<?> phoneNumberOwnerUpdate(@PathVariable("id") Long id, @PathVariable("phoneNumber") String phoneNumber) {
+        ownerService.phoneNumberOwnerUpdate(id, phoneNumber);
+
+        return ResponseEntity.ok("Phone number updated.");
     }
 
     @DeleteMapping("/{id}")

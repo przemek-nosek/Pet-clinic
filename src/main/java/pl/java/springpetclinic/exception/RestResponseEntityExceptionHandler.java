@@ -30,6 +30,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return getErrorMessageResponseEntity(HttpStatus.CONFLICT, ex.getMessage(), Collections.emptyList());
     }
 
+    @ExceptionHandler({PhoneNumberIllegalFormatException.class})
+    public ResponseEntity<ErrorMessage> handlePhoneNumberIllegalFormatException(PhoneNumberIllegalFormatException ex, WebRequest request) {
+        return getErrorMessageResponseEntity(HttpStatus.NOT_MODIFIED, ex.getMessage(), Collections.emptyList());
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         List<String> errors = new ArrayList<>();
