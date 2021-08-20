@@ -30,6 +30,10 @@ public class OwnerService {
             throw new PhoneNumberAlreadyExistsException(String.format("Phone number: %s already exists",phoneNumber));
         }
 
-        return
+        return ownerRepository.save(owner);
+    }
+
+    public Owner save(Owner owner) {
+        return ownerRepository.save(owner);
     }
 }

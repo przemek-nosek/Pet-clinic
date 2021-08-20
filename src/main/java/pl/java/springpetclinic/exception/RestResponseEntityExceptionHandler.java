@@ -1,13 +1,18 @@
 package pl.java.springpetclinic.exception;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,9 +24,30 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return getErrorMessageResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage(), Collections.emptyList());
     }
 
-    @ExceptionHandler({OwnerNotFoundException.class})
+    @ExceptionHandler({PhoneNumberAlreadyExistsException.class})
     public ResponseEntity<ErrorMessage> handlePhoneNumberAlreadyExistsException(PhoneNumberAlreadyExistsException ex, WebRequest request) {
         return getErrorMessageResponseEntity(HttpStatus.CONFLICT, ex.getMessage(), Collections.emptyList());
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        List<String> errors = new ArrayList<>();
+
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            errors.add(fieldError.getField() + " " + fieldError.getDefaultMessage());
+        }
+
+        ResponseEntity<ErrorMessage> errorMessage = getErrorMessageResponseEntity(status, ex.getMessage(), errors);
+
+        return new ResponseEntity<>(errorMessage, status);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+        ResponseEntity<ErrorMessage> errorMessage = getErrorMessageResponseEntity(status, ex.getMessage(), Collections.emptyList());
+
+        return new ResponseEntity<>(errorMessage, status);
     }
 
     private ResponseEntity<ErrorMessage> getErrorMessageResponseEntity(HttpStatus httpStatus, String message, List<String> errors) {

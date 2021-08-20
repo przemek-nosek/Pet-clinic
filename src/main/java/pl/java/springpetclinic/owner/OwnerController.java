@@ -35,4 +35,18 @@ public class OwnerController {
 
         return new ResponseEntity<>(addedOwner, HttpStatus.OK);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> editOwner(@PathVariable("id") Long id, @Valid @RequestBody Owner ownerDetails) {
+        Owner owner = ownerService.findOwnerById(id);
+
+        owner.setFirstName(ownerDetails.getFirstName());
+        owner.setLastName(ownerDetails.getLastName());
+        owner.setPhoneNumber(ownerDetails.getPhoneNumber());
+        owner.setPets(ownerDetails.getPets());
+
+        ownerService.save(owner);
+
+        return ResponseEntity.noContent().build();
+    }
 }
